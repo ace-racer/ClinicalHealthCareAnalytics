@@ -12,12 +12,17 @@ model_names = list(input_df.columns.values)[1:]
 
 num_models = len(model_names)
 
-output_content = ",".join(model_names) + "\n"
+output_content = "Models," + ",".join(model_names) + "\n"
 
 for itr in range(0, num_models):
+    output_content += model_names[itr] + ","
     for jtr in range(0, num_models):
-        score = jaccard_similarity_score(input_df.iloc[:, itr], input_df.iloc[:, jtr])
+        print("Calculating distance between {0} and {1}".format(model_names[itr], model_names[jtr]))
+
+        # The columns in the data frame start from 1
+        score = jaccard_similarity_score(input_df.iloc[:, itr + 1], input_df.iloc[:, jtr + 1])
         output_content += str(1-score) + ","
+        print("Distance = {0}".format(str(1-score)))
     output_content += "\n"
 
 with open("output/jaccard_distances_" + str(random.randint(1, 10000000)) + ".csv", "w") as fw:

@@ -1,4 +1,12 @@
-encounter_id,Logit,RF,NB,TAN,DT,NN,SVM
-training_1,0,0,0,0,1,0,0
-training_2,1,0,0,0,1,0,0
-training_3,0,1,1,1,1,1,0
+encounter_id,Logit,RF,NB
+training_1,0,0,0
+training_2,1,0,0
+training_3,0,1,1
+training_3,0,1,0
+training_3,1,1,0
+training_3,1,0,0
+training_3,1,0,0
+training_3,1,0,0
+training_3,0,0,1
+training_3,0,0,1
+training_3,1,1,1
