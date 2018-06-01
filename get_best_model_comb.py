@@ -4,6 +4,31 @@ df = pd.read_csv("data/model_outputs.csv", header=0)
 target = "readmitted2"
 count = 3
 
+
+def one_vs_rest(model_names, *args):
+    if args and len(args) >= 3:
+        print("One vs rest: " + model_names)
+        main_model_predictions = args[0]
+
+        args = args[1:]
+        predictions = []
+        for itr in range(len(main_model_predictions)):
+            rest_predictions = 0
+            prediction = 0
+            for arg in args:
+                rest_predictions += arg[itr]
+                prediction = arg[itr]
+            
+            # if the rest agree
+            if rest_predictions == 0 or rest_predictions == (count - 1):
+                predictions.append(prediction)
+            else:
+                predictions.append(main_model_predictions[itr])
+
+    return predictions
+
+
+
 def majority_voting(*args):
     if args and len(args) >= 3:
         print("Getting predictions from: " + str(args[-1]))
@@ -67,9 +92,10 @@ for itr in range(len(models)):
             predictions_B = df[models[jtr]]
             predictions_C = df[models[ktr]]
             selected_models = "{0}, {1} and {2}".format(models[itr], models[jtr], models[ktr])
-            predictions = majority_voting(predictions_A, predictions_B, predictions_C, selected_models)
+            #predictions = majority_voting(predictions_A, predictions_B, predictions_C, selected_models)
+            predictions = one_vs_rest(selected_models, predictions_A, predictions_B, predictions_C)
             all_predictions_results.append(compare_predictions(readmitted_df[target], predictions, selected_models))
-        break
+        
     break
 
 all_predictions_results = sorted(all_predictions_results, key=lambda x: x[0], reverse = True)
