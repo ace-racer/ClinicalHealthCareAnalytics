@@ -44,7 +44,7 @@ def compare_predictions(ensemble_predictions, actual_values, selected_models):
             else:
                 total_actual_1 += 1
     
-    print("{0}, {1}, {2} for {4}".format(corrects / total_predictions, correct_0 / total_actual_0, correct_1 / total_actual_1, selected_models))
+    print("{0}, {1}, {2} for {3}".format(corrects / total_predictions, correct_0 / total_actual_0, correct_1 / total_actual_1, selected_models))
     return (corrects / total_predictions, correct_0 / total_actual_0, correct_1 / total_actual_1, selected_models)
 
 
@@ -53,7 +53,9 @@ readmitted_df = df[["encounter_id", "readmitted2"]]
 print(readmitted_df)
 df = df.drop(["encounter_id", "readmitted2", "LR2", "DT-CHAID-2"], axis=1)
 
-models = df.columns.values
+models = list(df.columns.values)
+models.remove("DT-C5.0")
+models.insert(0, "DT-C5.0")
 print("Num models: " + str(len(models)))
 
 all_predictions_results = []
