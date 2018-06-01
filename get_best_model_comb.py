@@ -22,7 +22,7 @@ def majority_voting(*args):
 
     return predictions
 
-def compare_predictions(ensemble_predictions, actual_values):
+def compare_predictions(ensemble_predictions, actual_values, selected_models):
     total_predictions = len(actual_values)
     corrects = 0
     correct_1 = 0
@@ -34,25 +34,29 @@ def compare_predictions(ensemble_predictions, actual_values):
             corrects += 1
             if ensemble_predictions[itr] == 0:
                 correct_0 += 1
+                total_actual_0 += 1
             else:
                 correct_1 += 1
+                total_actual_1 += 1
         else:
             if actual_values[itr] == 0:
                 total_actual_0 += 1
             else:
                 total_actual_1 += 1
+    
+    print("{0}, {1}, {2} for {4}".format(corrects / total_predictions, correct_0 / total_actual_0, correct_1 / total_actual_1, selected_models))
+    return (corrects / total_predictions, correct_0 / total_actual_0, correct_1 / total_actual_1, selected_models)
 
-    return (corrects / total_predictions, correct_0 / total_actual_0, correct_1 / total_actual_1)
 
 
-
-readmitted_df = df[target]
+readmitted_df = df[["encounter_id", "readmitted2"]]
+print(readmitted_df)
 df = df.drop(["encounter_id", "readmitted2", "LR2", "DT-CHAID-2"], axis=1)
 
 models = df.columns.values
 print("Num models: " + str(len(models)))
 
-all_predictions = []
+all_predictions_results = []
 for itr in range(len(models)):
     for jtr in range(itr + 1, len(models)):
         for ktr in range(jtr + 1, len(models)):
@@ -61,9 +65,10 @@ for itr in range(len(models)):
             predictions_B = df[models[jtr]]
             predictions_C = df[models[ktr]]
             selected_models = "{0}, {1} and {2}".format(models[itr], models[jtr], models[ktr])
-            ensemble_predictions = majority_voting(predictions_A, predictions_B, predictions_C, selected_models)
-            all_predictions.append(ensemble_predictions)
+            predictions = majority_voting(predictions_A, predictions_B, predictions_C, selected_models)
+            all_predictions_results.append(compare_predictions(readmitted_df[target], predictions, selected_models))
+        break
     break
 
-all_predictions = sorted(all_predictions, key=lambda x: x[0], reverse = True)
-print(all_predictions)
+all_predictions_results = sorted(all_predictions_results, key=lambda x: x[0], reverse = True)
+print(all_predictions_results)
