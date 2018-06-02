@@ -79,9 +79,16 @@ print(readmitted_df)
 df = df.drop(["encounter_id", "readmitted2", "LR2", "DT-CHAID-2"], axis=1)
 
 models = list(df.columns.values)
+
 models.remove("DT-C5.0")
 models.insert(0, "DT-C5.0")
+
+models.remove("NB-TAN")
+models.insert(1, "NB-TAN")
+
+
 print("Num models: " + str(len(models)))
+
 
 all_predictions_results = []
 for itr in range(len(models)):
@@ -95,7 +102,7 @@ for itr in range(len(models)):
             #predictions = majority_voting(predictions_A, predictions_B, predictions_C, selected_models)
             predictions = one_vs_rest(selected_models, predictions_A, predictions_B, predictions_C)
             all_predictions_results.append(compare_predictions(readmitted_df[target], predictions, selected_models))
-        
+        break
     break
 
 all_predictions_results = sorted(all_predictions_results, key=lambda x: x[0], reverse = True)

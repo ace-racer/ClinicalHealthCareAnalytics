@@ -1,4 +1,4 @@
-encounter_id,readmitted2,$L-readmitted2,$R-readmitted2,$C-readmitted2,$N-readmitted2,$R1-readmitted2,$B-readmitted2,$R2-readmitted2,$R3-readmitted2,$R4-readmitted2,$R5-readmitted2,$R6-readmitted2,$R7-readmitted2,$R8-readmitted2,$N1-readmitted2,$N2-readmitted2,$L1-readmitted2,$R9-readmitted2
+encounter_id,readmitted2,DT-C5.0,DT-CHAID-BOOSTING,NN_BAGGING,DT_CHAID_BAGGING,NN_BOOSTING,DT-Chaid,DT_CHAID_2,DT-CART-BOOSTING,DT-CART-BAGGING,DT-CART,DT-QUEST,NN,NB-TAN,DT_QUEST_BOOSTING,LR2,Logistic Regression,DT_QIEST_BAGGING
 79566048,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 362018360,0,0,1,0,1,1,0,1,1,1,1,0,0,0,1,1,0,1
 2473188,1,0,0,1,0,0,1,0,0,0,1,0,0,0,1,0,0,0
