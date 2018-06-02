@@ -80,9 +80,11 @@ df = df.drop(["encounter_id", "readmitted2", "LR2", "DT-CHAID-2"], axis=1)
 
 models = list(df.columns.values)
 
+# Best model goes here
 models.remove("DT-C5.0")
 models.insert(0, "DT-C5.0")
 
+# Model with greatest Jaccard Distance here
 models.remove("NB-TAN")
 models.insert(1, "NB-TAN")
 
