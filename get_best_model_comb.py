@@ -81,12 +81,14 @@ df = df.drop(["encounter_id", "readmitted2", "LR2", "DT-CHAID-2"], axis=1)
 models = list(df.columns.values)
 
 # Best model goes here
-models.remove("DT-C5.0")
-models.insert(0, "DT-C5.0")
+best_model_name = "DT-C5.0"
+models.remove(best_model_name)
+models.insert(0, best_model_name)
 
 # Model with greatest Jaccard Distance here
-models.remove("NB-TAN")
-models.insert(1, "NB-TAN")
+model_with_greatest_j_dist = "NB-TAN"
+models.remove(model_with_greatest_j_dist)
+models.insert(1, model_with_greatest_j_dist)
 
 
 print("Num models: " + str(len(models)))
