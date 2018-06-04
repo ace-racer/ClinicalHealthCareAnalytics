@@ -84,25 +84,22 @@ df = df.drop(configurations.columns_to_remove, axis=1)
 
 models = list(df.columns.values)
 
-# Best model goes here
-best_model_name = configurations.best_model
-models.remove(best_model_name)
-models.insert(0, best_model_name)
+# remove the models to always include from the model pool
+for model in configurations.models_always_include:
+    models.remove(model)
 
-# Model with greatest Jaccard Distance here
-model_with_greatest_j_dist = configurations.model_with_greatest_J_dist
-models.remove(model_with_greatest_j_dist)
-models.insert(1, model_with_greatest_j_dist)
-
-
+combinations_count = count - len(configurations.models_always_include)
+print("Combinations: " + str(combinations_count))
 print("Num models: " + str(len(models)))
 all_predictions_results = []
-all_combinations = itertools.combinations(models, count)
+print(models)
+all_combinations = itertools.combinations(models, combinations_count)
 
 for combination in all_combinations:
     models_selected = ""
     current_model_combination_predictions = []
-    for model in combination:
+    models_to_evaluate = list(combination) + configurations.models_always_include
+    for model in models_to_evaluate:
         models_selected += model + ", "
         model_predictions = df[model]
         current_model_combination_predictions.append(model_predictions)
