@@ -1,7 +1,8 @@
 import pandas as pd
+import configurations
 
-df = pd.read_csv("data/model_outputs.csv", header=0)
-target = "readmitted2"
+df = pd.read_csv(configurations.input_file_location, header=0)
+target = configurations.target_column_name
 count = 3
 
 
@@ -74,19 +75,19 @@ def compare_predictions(ensemble_predictions, actual_values, selected_models):
 
 
 
-readmitted_df = df[["encounter_id", "readmitted2"]]
+readmitted_df = df[configurations.identity_output_columns]
 print(readmitted_df)
-df = df.drop(["encounter_id", "readmitted2", "LR2", "DT-CHAID-2"], axis=1)
+df = df.drop(configurations.columns_to_remove, axis=1)
 
 models = list(df.columns.values)
 
 # Best model goes here
-best_model_name = "DT-C5.0"
+best_model_name = configurations.best_model
 models.remove(best_model_name)
 models.insert(0, best_model_name)
 
 # Model with greatest Jaccard Distance here
-model_with_greatest_j_dist = "NB-TAN"
+model_with_greatest_j_dist = configurations.model_with_greatest_J_dist
 models.remove(model_with_greatest_j_dist)
 models.insert(1, model_with_greatest_j_dist)
 
@@ -103,11 +104,11 @@ for itr in range(len(models)):
             predictions_B = df[models[jtr]]
             predictions_C = df[models[ktr]]
             selected_models = "{0}, {1} and {2}".format(models[itr], models[jtr], models[ktr])
-            #predictions = majority_voting(predictions_A, predictions_B, predictions_C, selected_models)
-            predictions = one_vs_rest(selected_models, predictions_A, predictions_B, predictions_C)
+            predictions = majority_voting(predictions_A, predictions_B, predictions_C, selected_models)
+            #predictions = one_vs_rest(selected_models, predictions_A, predictions_B, predictions_C)
             all_predictions_results.append(compare_predictions(readmitted_df[target], predictions, selected_models))
-        break
-    break
+        # break
+    # break
 
 all_predictions_results = sorted(all_predictions_results, key=lambda x: x[0], reverse = True)
 print(all_predictions_results)
