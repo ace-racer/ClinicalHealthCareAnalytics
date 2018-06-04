@@ -1,9 +1,10 @@
 import pandas as pd
-import configurations
+import itertools
+import lee_configurations as configurations
 
 df = pd.read_csv(configurations.input_file_location, header=0)
 target = configurations.target_column_name
-count = 3
+count = configurations.ensemble_count
 
 
 def one_vs_rest(model_names, *args):
@@ -30,17 +31,18 @@ def one_vs_rest(model_names, *args):
 
 
 
-def majority_voting(*args):
-    if args and len(args) >= 3:
-        print("Getting predictions from: " + str(args[-1]))
-        args = args[:-1]
+def majority_voting(models_selected, current_model_combination_predictions):
+    if models_selected and current_model_combination_predictions is not None:
+        num_models = len(current_model_combination_predictions)
+        print("Getting ensemble predictions for: " + models_selected)
+        
         predictions = []
-        for itr in range(len(args[0])):
+        for itr in range(len(current_model_combination_predictions)):
             predicted_vals_sum = 0
-            for arg in args:
-                predicted_vals_sum += arg[itr]
+            for current_model_combination_prediction in current_model_combination_predictions:
+                predicted_vals_sum += current_model_combination_prediction[itr]
 
-            if predicted_vals_sum >= (count // 2) + 1:
+            if predicted_vals_sum >= (num_models // 2) + 1:
                 predictions.append(1)
             else:
                 predictions.append(0)
@@ -93,22 +95,21 @@ models.insert(1, model_with_greatest_j_dist)
 
 
 print("Num models: " + str(len(models)))
-
-
 all_predictions_results = []
-for itr in range(len(models)):
-    for jtr in range(itr + 1, len(models)):
-        for ktr in range(jtr + 1, len(models)):
-            print("Evaluating models {0}, {1} and {2}".format(models[itr], models[jtr], models[ktr]))
-            predictions_A = df[models[itr]]
-            predictions_B = df[models[jtr]]
-            predictions_C = df[models[ktr]]
-            selected_models = "{0}, {1} and {2}".format(models[itr], models[jtr], models[ktr])
-            predictions = majority_voting(predictions_A, predictions_B, predictions_C, selected_models)
-            #predictions = one_vs_rest(selected_models, predictions_A, predictions_B, predictions_C)
-            all_predictions_results.append(compare_predictions(readmitted_df[target], predictions, selected_models))
-        # break
-    # break
+all_combinations = itertools.combinations(models, count)
+
+for combination in all_combinations:
+    models_selected = ""
+    current_model_combination_predictions = []
+    for model in combination:
+        models_selected += model + ", "
+        model_predictions = df[model]
+        current_model_combination_predictions.append(model_predictions)
+    
+    print(models_selected)
+    ensemble_predictions = majority_voting(models_selected, current_model_combination_predictions)
+    # ensemble_predictions = one_vs_rest(selected_models, predictions_A, predictions_B, predictions_C)
+    all_predictions_results.append(compare_predictions(readmitted_df[target], ensemble_predictions, models_selected))
 
 all_predictions_results = sorted(all_predictions_results, key=lambda x: x[0], reverse = True)
 print(all_predictions_results)

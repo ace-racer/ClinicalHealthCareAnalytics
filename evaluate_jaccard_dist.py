@@ -5,7 +5,7 @@ from sklearn.metrics import jaccard_similarity_score
 
 
 # read the details from the CSV input
-input_df = pd.read_csv("data/p2_results.csv", header=0)
+input_df = pd.read_csv("ModelOutputs/lee/model_output_p2(Lee).csv", header=0)
 
 # Get model names (other than the first column)
 model_names = list(input_df.columns.values)[1:]
