@@ -35,9 +35,10 @@ def majority_voting(models_selected, current_model_combination_predictions):
     if models_selected and current_model_combination_predictions is not None:
         num_models = len(current_model_combination_predictions)
         print("Getting ensemble predictions for: " + models_selected)
+        print("Num models: " + str(len(current_model_combination_predictions)))
         
         predictions = []
-        for itr in range(len(current_model_combination_predictions)):
+        for itr in range(len(current_model_combination_predictions[0])):
             predicted_vals_sum = 0
             for current_model_combination_prediction in current_model_combination_predictions:
                 predicted_vals_sum += current_model_combination_prediction[itr]
