@@ -111,7 +111,7 @@ for combination in all_combinations:
     print(models_selected)
     
     if configurations.evaluation_strategy == "onevsrest":
-        ensemble_predictions = one_vs_rest(models_selected, master_model_predictions, current_model_combination_predictions)
+        ensemble_predictions = one_vs_rest(models_selected + configurations.master_model, master_model_predictions, current_model_combination_predictions)
     else:
         ensemble_predictions = majority_voting(models_selected, current_model_combination_predictions)
         
