@@ -1,6 +1,6 @@
 import pandas as pd
 import itertools
-import lee_configurations as configurations
+import bala_configurations as configurations
 
 df = pd.read_csv(configurations.input_file_location, header=0)
 target = configurations.target_column_name
