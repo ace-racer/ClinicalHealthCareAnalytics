@@ -7,25 +7,22 @@ target = configurations.target_column_name
 count = configurations.ensemble_count
 
 
-def one_vs_rest(model_names, *args):
-    if args and len(args) >= 3:
-        print("One vs rest: " + model_names)
-        main_model_predictions = args[0]
+def one_vs_rest(models_selected, master_model_predictions, rest_models_predictions):
+    print("One vs rest: " + models_selected)
 
-        args = args[1:]
-        predictions = []
-        for itr in range(len(main_model_predictions)):
-            rest_predictions = 0
-            prediction = 0
-            for arg in args:
-                rest_predictions += arg[itr]
-                prediction = arg[itr]
-            
-            # if the rest agree
-            if rest_predictions == 0 or rest_predictions == (count - 1):
-                predictions.append(prediction)
-            else:
-                predictions.append(main_model_predictions[itr])
+    predictions = []
+    for itr in range(len(master_model_predictions)):
+        rest_predictions = 0
+        prediction = 0
+        for arg in rest_models_predictions:
+            rest_predictions += arg[itr]
+            prediction = arg[itr]
+        
+        # if the rest agree
+        if rest_predictions == 0 or rest_predictions == len(rest_models_predictions):
+            predictions.append(prediction)
+        else:
+            predictions.append(master_model_predictions[itr])
 
     return predictions
 
@@ -94,19 +91,30 @@ print("Num models: " + str(len(models)))
 all_predictions_results = []
 print(models)
 all_combinations = itertools.combinations(models, combinations_count)
+master_model_predictions = df[configurations.master_model]
 
 for combination in all_combinations:
     models_selected = ""
     current_model_combination_predictions = []
-    models_to_evaluate = list(combination) + configurations.models_always_include
+
+    if configurations.evaluation_strategy == "onevsrest":
+        models_to_evaluate = list(combination)
+    else:
+        models_to_evaluate = list(combination) + configurations.models_always_include
+    
+    
     for model in models_to_evaluate:
         models_selected += model + ", "
         model_predictions = df[model]
         current_model_combination_predictions.append(model_predictions)
     
     print(models_selected)
-    ensemble_predictions = majority_voting(models_selected, current_model_combination_predictions)
-    # ensemble_predictions = one_vs_rest(selected_models, predictions_A, predictions_B, predictions_C)
+    
+    if configurations.evaluation_strategy == "onevsrest":
+        ensemble_predictions = one_vs_rest(models_selected, master_model_predictions, current_model_combination_predictions)
+    else:
+        ensemble_predictions = majority_voting(models_selected, current_model_combination_predictions)
+        
     all_predictions_results.append(compare_predictions(readmitted_df[target], ensemble_predictions, models_selected))
 
 all_predictions_results = sorted(all_predictions_results, key=lambda x: x[0], reverse = True)
